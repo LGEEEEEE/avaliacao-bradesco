@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Esteira - Leitura Avançada</title>
+    <title>Avaliação Bradesco - Aliança Consig</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { max-width: 900px; padding-top: 30px; padding-bottom: 50px; }
         .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 10px; margin-bottom: 20px; }
-        .card-header { background-color: #fff; border-bottom: 1px solid #eee; font-weight: bold; color: #0d6efd; padding: 15px 20px; }
+        .card-header { background-color: #fff; border-bottom: 1px solid #eee; font-weight: bold; color: #cc092f; padding: 15px 20px; } /* Cor vermelha Bradesco */
         .upload-area { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px; text-align: center; background: #fff; cursor: pointer; transition: 0.3s; }
-        .upload-area:hover { border-color: #0d6efd; background-color: #f8fbff; }
+        .upload-area:hover { border-color: #cc092f; background-color: #fff5f6; }
         .btn-whatsapp { background-color: #25D366; color: white; font-weight: bold; border: none; }
         .btn-whatsapp:hover { background-color: #128C7E; color: white; }
-        .modal-total { font-size: 1.25rem; font-weight: 700; color: #0d6efd; }
+        .modal-total { font-size: 1.25rem; font-weight: 700; color: #cc092f; }
         .contract-item:hover { background-color: #f8f9fa; cursor: pointer; }
         
         /* Loading Overlay */
@@ -25,7 +25,7 @@
 <body>
 
     <div id="loadingOverlay">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+        <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
         <h5 class="mt-3 text-secondary" id="loadingText">Iniciando Inteligência Artificial...</h5>
         <small class="text-muted mt-2">Suporte a OCR e Leitura Nativa</small>
     </div>
@@ -58,7 +58,7 @@
                         <small class="text-muted d-block">Total Selecionado:</small>
                         <span id="displayTotalModal" class="modal-total">R$ 0,00</span>
                     </div>
-                    <button type="button" class="btn btn-primary px-4" onclick="confirmarSelecao()">
+                    <button type="button" class="btn btn-danger px-4" onclick="confirmarSelecao()">
                         Confirmar <i class="fas fa-check"></i>
                     </button>
                 </div>
@@ -67,7 +67,7 @@
     </div>
 
     <div class="container">
-        <h3 class="text-center mb-4"><i class="fas fa-file-contract text-primary"></i> CRM Esteira Inteligente</h3>
+        <h3 class="text-center mb-4" style="color: #cc092f;"><i class="fas fa-university"></i> Avaliação Bradesco - Aliança Consig</h3>
 
         <form id="crmForm">
             
@@ -103,14 +103,29 @@
                             <label class="form-label">E-mail *</label>
                             <input type="email" id="email" class="form-control" required>
                         </div>
+                        
                         <div class="col-md-12">
-                            <label class="form-label">Possui conta no Bradesco? *</label>
-                            <select id="conta_bradesco" class="form-select" required>
+                            <label class="form-label fw-bold">Possui conta no Bradesco? *</label>
+                            <select id="conta_bradesco" class="form-select" onchange="toggleDadosBancarios()" required>
                                 <option value="">Selecione...</option>
                                 <option value="Sim">Sim</option>
                                 <option value="Nao">Não</option>
                             </select>
                         </div>
+
+                        <div class="row g-3 mt-1" id="div_dados_bancarios" style="display: none;">
+                            <div class="col-md-12"><hr class="text-muted"></div>
+                            <h6 class="text-danger fw-bold"><i class="fas fa-university"></i> Dados Bancários Bradesco</h6>
+                            <div class="col-md-6">
+                                <label class="form-label">Agência</label>
+                                <input type="text" id="agencia_bradesco" class="form-control" placeholder="Sem dígito">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Conta Corrente</label>
+                                <input type="text" id="conta_corrente_bradesco" class="form-control" placeholder="Com dígito">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -135,16 +150,7 @@
                 <div class="card-header">4. Dados da Proposta</div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Gerente *</label>
-                            <select id="gerente" class="form-select" required>
-                                <option value="">Selecione...</option>
-                                <option value="Ana">Ana</option>
-                                <option value="Carlos">Carlos</option>
-                                <option value="Fernanda">Fernanda</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Banco Destino *</label>
                             <select id="banco" class="form-select" required>
                                 <option value="">Selecione...</option>
@@ -154,26 +160,13 @@
                                 <option value="Daycoval">Daycoval</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold text-primary">Soma das Parcelas (Do Extrato) *</label>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold text-danger">Soma Parcelas (Extrato) *</label>
                             <input type="text" id="parcela_total" class="form-control fw-bold" readonly required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Valor Pretendido *</label>
                             <input type="text" id="valor_pretendido" class="form-control money" required>
-                        </div>
-                         <div class="col-md-6">
-                            <label class="form-label">Rating *</label>
-                            <select id="rating" class="form-select" required>
-                                <option value="A">A</option><option value="B">B</option><option value="C">C</option>
-                                <option value="D">D</option><option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Grau *</label>
-                            <select id="grau" class="form-select" required>
-                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -211,7 +204,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
         // ============================================
-        // 1. UTILITÁRIOS (Formatadores)
+        // 1. UTILITÁRIOS E UI
         // ============================================
         const showLoading = (msg) => {
             document.getElementById('loadingText').innerText = msg;
@@ -222,6 +215,7 @@
         const moedaParaFloat = (v) => parseFloat(String(v || '').replace('R$', '').trim().replace(/\./g, "").replace(",", ".")) || 0;
         const formatarMoeda = (v) => (v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+        // Máscara de Moeda
         document.querySelectorAll('.money').forEach(input => {
             input.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -232,10 +226,29 @@
             });
         });
 
+        // Toggle Dados Bancários
+        function toggleDadosBancarios() {
+            const select = document.getElementById('conta_bradesco');
+            const div = document.getElementById('div_dados_bancarios');
+            const inputAgencia = document.getElementById('agencia_bradesco');
+            const inputConta = document.getElementById('conta_corrente_bradesco');
+
+            if (select.value === 'Sim') {
+                div.style.display = 'flex';
+                inputAgencia.setAttribute('required', 'required');
+                inputConta.setAttribute('required', 'required');
+            } else {
+                div.style.display = 'none';
+                inputAgencia.removeAttribute('required');
+                inputConta.removeAttribute('required');
+                inputAgencia.value = '';
+                inputConta.value = '';
+            }
+        }
+
         // ============================================
-        // 2. LÓGICA DE EXTRAÇÃO
+        // 2. LÓGICA DE EXTRAÇÃO (Mantida igual ao original)
         // ============================================
-        
         async function parsearPdf(input) {
             const file = input instanceof HTMLInputElement ? input.files[0] : input.files[0];
             if (!file) return;
@@ -254,7 +267,7 @@
                     const pdf = await pdfjsLib.getDocument(typedarray).promise;
                     let textFound = false;
 
-                    // --- PLANO A: LEITURA RÁPIDA ---
+                    // LEITURA RÁPIDA
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const textContent = await page.getTextContent();
@@ -266,10 +279,9 @@
                                       extractedText.toUpperCase().includes('EMPRÉSTIMO') || 
                                       extractedText.toUpperCase().includes('CPF');
 
-                    // --- PLANO B: OCR (TESSERACT) SE FALHAR ---
+                    // OCR (TESSERACT)
                     if (!textFound || extractedText.trim().length < 50 || !hasRealData) {
-                        showLoading('Texto ilegível. Ativando OCR (Isso pode levar alguns segundos)...');
-                        console.log("Ativando Tesseract...");
+                        showLoading('Texto ilegível. Ativando OCR...');
                         extractedText = ''; 
                         
                         if (typeof Tesseract === 'undefined') throw new Error("Erro Tesseract");
@@ -290,13 +302,10 @@
                         await worker.terminate();
                     }
 
-                    // --- DETECÇÃO AUTOMÁTICA DE TIPO ---
                     if (extractedText.includes("Extrato de Consignações Vigentes") || extractedText.includes("Rubrica\nSequência")) {
-                        console.log("Modo SIAPE Detectado");
                         document.getElementById('logicUsed').innerText = "SIAPE (Inteligente)";
                         processarPdfSiape(extractedText);
                     } else {
-                        console.log("Modo Exército/Geral Detectado");
                         document.getElementById('logicUsed').innerText = "Exército/OCR (Padrão)";
                         processarPdfExercicio(extractedText);
                     }
@@ -310,79 +319,51 @@
             fileReader.readAsArrayBuffer(file);
         }
 
-        // --- LÓGICA SIAPE CORRIGIDA COM BASE NO DEPURADOR ---
         function processarPdfSiape(text) {
-            console.log("Iniciando processamento SIAPE (Lógica de Linhas)...");
-
-            // 1. Extração de Nome e CPF Baseada em Linhas
-            // O padrão do seu PDF é: 
-            // Linha X: CPF (xxx.xxx.xxx-xx)
-            // Linha X+1: Matrícula
-            // Linha X+2: Nome
-            
-            const linhas = text.split('\n').map(l => l.trim()); // Divide em linhas e limpa espaços
+            const linhas = text.split('\n').map(l => l.trim());
             let cpfEncontrado = '';
             let nomeEncontrado = '';
-
-            // Regex simples de CPF
             const regexCPF = /\d{3}\.\d{3}\.\d{3}-\d{2}/;
 
             for (let i = 0; i < linhas.length; i++) {
                 const linhaAtual = linhas[i];
-                
-                // Se achou uma linha que PARECE um CPF
                 if (regexCPF.test(linhaAtual)) {
                     cpfEncontrado = linhaAtual.match(regexCPF)[0];
-                    
-                    // O nome costuma estar 2 linhas abaixo no seu layout SIAPE
-                    // Verifica se a linha i+2 existe
                     if (linhas[i+2]) {
                         const candidatoNome = linhas[i+2];
-                        // Filtra para garantir que não pegamos "Bruta" ou números
                         if (candidatoNome.length > 3 && !candidatoNome.includes('Bruta') && !/\d/.test(candidatoNome)) {
                             nomeEncontrado = candidatoNome;
-                            break; // Achou, para o loop
+                            break;
                         }
                     }
                 }
             }
 
-            // Preenche o formulário se achou
             if(cpfEncontrado) document.getElementById('cpf').value = cpfEncontrado;
             if(nomeEncontrado) document.getElementById('nome').value = nomeEncontrado;
             
-            // Fallback: Se a lógica das linhas falhar, tenta a regex antiga
             if (!nomeEncontrado) {
-                const regexFallback = /Nome\n[^\n]+\n[^\n]+\n([A-Z\s]+)/; // Tenta pegar blocos
+                const regexFallback = /Nome\n[^\n]+\n[^\n]+\n([A-Z\s]+)/;
                 const matchFallback = text.match(regexFallback);
                 if(matchFallback) document.getElementById('nome').value = matchFallback[1].trim();
             }
 
-            // 2. Extração de Contratos (Mantido a lógica que funciona)
             const rgxEmprestimos = /(EMPREST[^\n]+)\n(?:.|\n)*?(R\$\s*[\d\.,]+)\n(\d{2,3}\/\d{2,3})/g;
             let matches = [...text.matchAll(rgxEmprestimos)];
-            
             let contratos = [];
             matches.forEach((m) => {
                 const nomeBanco = m[1].replace(/^\d+\s*-\s*/, '').replace('EMPREST BCO PRIVADOS - ', '').replace('EMPREST BCO OFICIAL - ', '').trim();
                 const valor = moedaParaFloat(m[2]);
                 const [pagas, total] = m[3].split('/');
-                
-                if (parseInt(total) < 900) { 
-                    contratos.push({ banco: nomeBanco, valor: valor, pagas: pagas, total: total });
-                }
+                if (parseInt(total) < 900) contratos.push({ banco: nomeBanco, valor: valor, pagas: pagas, total: total });
             });
-
             contratos.sort((a,b) => b.valor - a.valor);
             hideLoading();
             abrirModal(contratos);
         }
 
-        // --- LÓGICA EXÉRCITO/GERAL (MANTIDA) ---
         function processarPdfExercicio(text) {
             let cleanText = text.replace(/--- FIM DA PÁGINA \d+ ---/g, '');
-            
-            // 1. Nome e CPF
             const infoRegex = /(\d{9,12})\s*-\s*([\d.-]+)\s*-\s*([A-ZÀ-Ú ]+)/;
             const matchInfo = text.match(infoRegex);
             if(matchInfo) {
@@ -393,28 +374,21 @@
                 if(cpfMatch) document.getElementById('cpf').value = cpfMatch[0];
             }
 
-            // 2. Contratos
             let contratos = [];
             const blocos = cleanText.split(/Andamento|Em\s+Andamento/gi);
-            
             if(blocos.length > 1) {
                 blocos.forEach(bloco => {
                     if (!bloco.toUpperCase().includes('EMPRÉSTIMO') && !bloco.toUpperCase().includes('DEDUT')) return;
-                    
                     const valorMatch = bloco.match(/R\$\s*([\d.,]+)/);
                     const parcMatch = bloco.match(/(\d+)\s*[\/e]\s*(\d{2,3})/);
-                    
                     if(valorMatch && parcMatch) {
                         let nomeBanco = 'Empréstimo';
                         if(bloco.includes('BRADESCO')) nomeBanco = 'BRADESCO';
                         if(bloco.includes('SANTANDER')) nomeBanco = 'SANTANDER';
                         if(bloco.includes('POUPEX')) nomeBanco = 'POUPEX';
                         if(bloco.includes('SABEMI')) nomeBanco = 'SABEMI';
-                        
                         const valor = moedaParaFloat(valorMatch[1]);
-                        if(valor > 0) {
-                            contratos.push({ banco: nomeBanco, valor: valor, pagas: parcMatch[1], total: parcMatch[2] });
-                        }
+                        if(valor > 0) contratos.push({ banco: nomeBanco, valor: valor, pagas: parcMatch[1], total: parcMatch[2] });
                     }
                 });
             } else {
@@ -423,30 +397,23 @@
                     if (tokens[i].includes('R$') || (tokens[i].match(/\d+,\d{2}/) && tokens[i-1] === 'R$')) {
                          let valorStr = tokens[i].includes('R$') ? tokens[i] : tokens[i-1] + tokens[i];
                          let valor = moedaParaFloat(valorStr);
-                         
                          const janela = tokens.slice(Math.max(0, i-15), Math.min(tokens.length, i+15)).join(' ');
                          const matchP = janela.match(/(\d{1,3})\/(\d{2,3})/);
-                         
                          if(matchP && valor > 10) {
                              let banco = "Diversos";
-                             ["BRADESCO","ITAU","PAN","C6","SANTANDER","SABEMI","POUPEX"].forEach(b => {
-                                 if(janela.toUpperCase().includes(b)) banco = b;
-                             });
-                             if(!contratos.find(c => c.valor === valor && c.total === matchP[2])) {
-                                 contratos.push({ banco: banco, valor: valor, pagas: matchP[1], total: matchP[2] });
-                             }
+                             ["BRADESCO","ITAU","PAN","C6","SANTANDER","SABEMI","POUPEX"].forEach(b => { if(janela.toUpperCase().includes(b)) banco = b; });
+                             if(!contratos.find(c => c.valor === valor && c.total === matchP[2])) contratos.push({ banco: banco, valor: valor, pagas: matchP[1], total: matchP[2] });
                          }
                     }
                 }
             }
-
             contratos.sort((a,b) => b.valor - a.valor);
             hideLoading();
             abrirModal(contratos);
         }
 
         // ============================================
-        // 3. UI E MODAL
+        // 3. UI E ENVIO
         // ============================================
         function abrirModal(contratos) {
             const container = document.getElementById("listaContratosContainer");
@@ -478,7 +445,6 @@
                 document.querySelectorAll('.item-parcela').forEach(ck => ck.checked = e.target.checked);
                 calcTotal();
             };
-            
             calcTotal();
             new bootstrap.Modal(document.getElementById('modalParcelas')).show();
         }
@@ -509,28 +475,34 @@
         document.getElementById('crmForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const getVal = (id) => document.getElementById(id).value;
-            const msg = `*🚀 SIMULAÇÃO BRADESCO*
+            
+            // Lógica de Conta na Mensagem
+            let contaInfo = "Não possui conta cadastrada.";
+            if (getVal('conta_bradesco') === 'Sim') {
+                contaInfo = `✅ AG: ${getVal('agencia_bradesco')} | CC: ${getVal('conta_corrente_bradesco')}`;
+            }
 
-CLIENTE:
+            // Mensagem formatada com Emojis Compatíveis
+            const msg = `🚀 *AVALIAÇÃO BRADESCO - ALIANÇA CONSIG*
 
+👤 *CLIENTE:*
 Nome: ${getVal('nome')}
 CPF: ${getVal('cpf')}
 Nasc: ${getVal('nascimento').split('-').reverse().join('/')}
-Email: ${getVal('email')}
+📧 Email: ${getVal('email')}
 
-ENDEREÇO:
+🏦 *DADOS BANCÁRIOS (BRADESCO):*
+${contaInfo}
 
+📍 *ENDEREÇO:*
 ${getVal('cep')} - ${getVal('endereco_completo')}
 
-PROPOSTA
-
-Gerente: ${getVal('gerente')}
+💰 *PROPOSTA:*
 Banco Destino: *${getVal('banco')}*
 Soma Parcelas: *R$ ${getVal('parcela_total')}*
 Líquido Pretendido: *R$ ${getVal('valor_pretendido')}*
-Rating: ${getVal('rating')} | Grau: ${getVal('grau')}
 
-_Por favor, verifique os anexos acima._`;
+⚠️ _Por favor, verifique os anexos enviados._`;
             
             const phone = getVal('whatsapp_destino').replace(/\D/g, '');
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -538,7 +510,7 @@ _Por favor, verifique os anexos acima._`;
         
         // Drag Drop
         const dz = document.getElementById('dropZone');
-        dz.ondragover = (e) => { e.preventDefault(); dz.style.background = '#f8fbff'; };
+        dz.ondragover = (e) => { e.preventDefault(); dz.style.background = '#fff5f6'; };
         dz.ondragleave = (e) => { e.preventDefault(); dz.style.background = '#fff'; };
         dz.ondrop = (e) => {
             e.preventDefault(); dz.style.background = '#fff';
