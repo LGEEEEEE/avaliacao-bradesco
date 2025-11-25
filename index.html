@@ -10,7 +10,7 @@
         body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .container { max-width: 900px; padding-top: 30px; padding-bottom: 50px; }
         .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 10px; margin-bottom: 20px; }
-        .card-header { background-color: #fff; border-bottom: 1px solid #eee; font-weight: bold; color: #cc092f; padding: 15px 20px; } /* Cor vermelha Bradesco */
+        .card-header { background-color: #fff; border-bottom: 1px solid #eee; font-weight: bold; color: #cc092f; padding: 15px 20px; }
         .upload-area { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px; text-align: center; background: #fff; cursor: pointer; transition: 0.3s; }
         .upload-area:hover { border-color: #cc092f; background-color: #fff5f6; }
         .btn-whatsapp { background-color: #25D366; color: white; font-weight: bold; border: none; }
@@ -61,6 +61,35 @@
                     <button type="button" class="btn btn-danger px-4" onclick="confirmarSelecao()">
                         Confirmar <i class="fas fa-check"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalLembreteAnexos" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-3">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <i class="fas fa-paperclip fa-4x text-warning"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Atenção aos Anexos!</h4>
+                    <p class="text-muted">Ao enviar a proposta, não esqueça de anexar os seguintes documentos na conversa do WhatsApp:</p>
+                    
+                    <ul class="list-group list-group-flush text-start d-inline-block mx-auto mb-4" style="max-width: 300px;">
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Extrato de Consignação</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> Contracheque Atual</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i> RG ou CNH</li>
+                    </ul>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-whatsapp btn-lg" onclick="finalizarEnvioWhatsApp()">
+                            Entendi, Abrir WhatsApp <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button type="button" class="btn btn-link text-secondary" data-bs-dismiss="modal">
+                            Voltar e Editar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,14 +202,10 @@
             </div>
 
             <div class="card">
-                <div class="card-header">5. Anexos e Envio</div>
+                <div class="card-header">5. Envio</div>
                 <div class="card-body">
                      <div class="row g-3">
-                         <div class="col-md-6">
-                            <label class="form-label">Documentos (RG/CNH/Contracheque) *</label>
-                            <input type="file" id="arquivo_docs" class="form-control" multiple required>
-                         </div>
-                         <div class="col-md-6">
+                         <div class="col-md-12">
                             <label class="form-label">WhatsApp Destino *</label>
                             <input type="text" id="whatsapp_destino" class="form-control" value="5561998176188" required>
                          </div>
@@ -215,7 +240,6 @@
         const moedaParaFloat = (v) => parseFloat(String(v || '').replace('R$', '').trim().replace(/\./g, "").replace(",", ".")) || 0;
         const formatarMoeda = (v) => (v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-        // Máscara de Moeda
         document.querySelectorAll('.money').forEach(input => {
             input.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -226,7 +250,6 @@
             });
         });
 
-        // Toggle Dados Bancários
         function toggleDadosBancarios() {
             const select = document.getElementById('conta_bradesco');
             const div = document.getElementById('div_dados_bancarios');
@@ -408,9 +431,6 @@
             abrirModal(contratos);
         }
 
-        // ============================================
-        // 3. UI E ENVIO
-        // ============================================
         function abrirModal(contratos) {
             const container = document.getElementById("listaContratosContainer");
             container.innerHTML = '';
@@ -468,53 +488,57 @@
             }
         }
 
-        // ====== ENVIO COM CORREÇÃO DE EMOJIS (UNICODE) ======
+        // Variável global
+        let urlWhatsAppFinal = "";
+
         document.getElementById('crmForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const getVal = (id) => document.getElementById(id).value;
             
-            // Lógica de Conta na Mensagem
-            let contaInfo = "N\u00E3o possui conta cadastrada.";
+            let contaInfo = "NAO possui conta cadastrada.";
             if (getVal('conta_bradesco') === 'Sim') {
-                // Unicode para Checkmark verde e banco
-                contaInfo = `\u2705 AG: ${getVal('agencia_bradesco')} | CC: ${getVal('conta_corrente_bradesco')}`;
+                contaInfo = `[OK] AG: ${getVal('agencia_bradesco')} | CC: ${getVal('conta_corrente_bradesco')}`;
             }
 
-            // Mensagem formatada com Emojis via Unicode
-            // \uD83D\uDE80 = Foguete
-            // \uD83D\uDC64 = Pessoa
-            // \uD83D\uDCE7 = Email
-            // \uD83C\uDFE6 = Banco
-            // \uD83D\uDCCD = Pin de Local
-            // \uD83D\uDCB0 = Saco de Dinheiro
-            // \u26A0\uFE0F = Alerta
+            const msg = `*AVALIACAO BRADESCO - ALIANCA CONSIG*
 
-            const msg = `\uD83D\uDE80 *AVALIA\u00C7\u00C3O BRADESCO - ALIAN\u00C7A CONSIG*
-
-\uD83D\uDC64 *CLIENTE:*
+*CLIENTE:*
 Nome: ${getVal('nome')}
 CPF: ${getVal('cpf')}
 Nasc: ${getVal('nascimento').split('-').reverse().join('/')}
-\uD83D\uDCE7 Email: ${getVal('email')}
+Email: ${getVal('email')}
 
-\uD83C\uDFE6 *DADOS BANC\u00C1RIOS (BRADESCO):*
+*DADOS BANCARIOS (BRADESCO):*
 ${contaInfo}
 
-\uD83D\uDCCD *ENDERE\u00C7O:*
+*ENDERECO:*
 ${getVal('cep')} - ${getVal('endereco_completo')}
 
-\uD83D\uDCB0 *PROPOSTA:*
+*PROPOSTA:*
 Banco Destino: *${getVal('banco')}*
 Soma Parcelas: *R$ ${getVal('parcela_total')}*
-L\u00EDquido Pretendido: *R$ ${getVal('valor_pretendido')}*
+Liquido Pretendido: *R$ ${getVal('valor_pretendido')}*
 
-\u26A0\uFE0F _Por favor, verifique os anexos enviados._`;
+--------------------------------
+_Por favor, verifique os anexos enviados na conversa._`;
             
             const phone = getVal('whatsapp_destino').replace(/\D/g, '');
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            // AQUI MUDOU: Link direto para o WhatsApp WEB
+            urlWhatsAppFinal = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+
+            // Abre Modal
+            new bootstrap.Modal(document.getElementById('modalLembreteAnexos')).show();
         });
+
+        // AQUI MUDOU: Usa uma "janela nomeada" ('janela_whatsapp_crm')
+        // Se a janela já existir, ele recarrega ela em vez de abrir outra
+        function finalizarEnvioWhatsApp() {
+            if(urlWhatsAppFinal) {
+                window.open(urlWhatsAppFinal, 'janela_whatsapp_crm');
+            }
+        }
         
-        // Drag Drop
         const dz = document.getElementById('dropZone');
         dz.ondragover = (e) => { e.preventDefault(); dz.style.background = '#fff5f6'; };
         dz.ondragleave = (e) => { e.preventDefault(); dz.style.background = '#fff'; };
