@@ -247,15 +247,13 @@
         }
 
         // ============================================
-        // 2. LÓGICA DE EXTRAÇÃO (Mantida igual ao original)
+        // 2. LÓGICA DE EXTRAÇÃO
         // ============================================
         async function parsearPdf(input) {
             const file = input instanceof HTMLInputElement ? input.files[0] : input.files[0];
             if (!file) return;
 
             showLoading('Analisando PDF...');
-            
-            // Limpa campos
             document.getElementById('nome').value = '';
             document.getElementById('cpf').value = '';
 
@@ -267,7 +265,6 @@
                     const pdf = await pdfjsLib.getDocument(typedarray).promise;
                     let textFound = false;
 
-                    // LEITURA RÁPIDA
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const textContent = await page.getTextContent();
@@ -279,7 +276,6 @@
                                       extractedText.toUpperCase().includes('EMPRÉSTIMO') || 
                                       extractedText.toUpperCase().includes('CPF');
 
-                    // OCR (TESSERACT)
                     if (!textFound || extractedText.trim().length < 50 || !hasRealData) {
                         showLoading('Texto ilegível. Ativando OCR...');
                         extractedText = ''; 
@@ -472,37 +468,47 @@
             }
         }
 
+        // ====== ENVIO COM CORREÇÃO DE EMOJIS (UNICODE) ======
         document.getElementById('crmForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const getVal = (id) => document.getElementById(id).value;
             
             // Lógica de Conta na Mensagem
-            let contaInfo = "Não possui conta cadastrada.";
+            let contaInfo = "N\u00E3o possui conta cadastrada.";
             if (getVal('conta_bradesco') === 'Sim') {
-                contaInfo = `✅ AG: ${getVal('agencia_bradesco')} | CC: ${getVal('conta_corrente_bradesco')}`;
+                // Unicode para Checkmark verde e banco
+                contaInfo = `\u2705 AG: ${getVal('agencia_bradesco')} | CC: ${getVal('conta_corrente_bradesco')}`;
             }
 
-            // Mensagem formatada com Emojis Compatíveis
-            const msg = `🚀 *AVALIAÇÃO BRADESCO - ALIANÇA CONSIG*
+            // Mensagem formatada com Emojis via Unicode
+            // \uD83D\uDE80 = Foguete
+            // \uD83D\uDC64 = Pessoa
+            // \uD83D\uDCE7 = Email
+            // \uD83C\uDFE6 = Banco
+            // \uD83D\uDCCD = Pin de Local
+            // \uD83D\uDCB0 = Saco de Dinheiro
+            // \u26A0\uFE0F = Alerta
 
-👤 *CLIENTE:*
+            const msg = `\uD83D\uDE80 *AVALIA\u00C7\u00C3O BRADESCO - ALIAN\u00C7A CONSIG*
+
+\uD83D\uDC64 *CLIENTE:*
 Nome: ${getVal('nome')}
 CPF: ${getVal('cpf')}
 Nasc: ${getVal('nascimento').split('-').reverse().join('/')}
-📧 Email: ${getVal('email')}
+\uD83D\uDCE7 Email: ${getVal('email')}
 
-🏦 *DADOS BANCÁRIOS (BRADESCO):*
+\uD83C\uDFE6 *DADOS BANC\u00C1RIOS (BRADESCO):*
 ${contaInfo}
 
-📍 *ENDEREÇO:*
+\uD83D\uDCCD *ENDERE\u00C7O:*
 ${getVal('cep')} - ${getVal('endereco_completo')}
 
-💰 *PROPOSTA:*
+\uD83D\uDCB0 *PROPOSTA:*
 Banco Destino: *${getVal('banco')}*
 Soma Parcelas: *R$ ${getVal('parcela_total')}*
-Líquido Pretendido: *R$ ${getVal('valor_pretendido')}*
+L\u00EDquido Pretendido: *R$ ${getVal('valor_pretendido')}*
 
-⚠️ _Por favor, verifique os anexos enviados._`;
+\u26A0\uFE0F _Por favor, verifique os anexos enviados._`;
             
             const phone = getVal('whatsapp_destino').replace(/\D/g, '');
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
